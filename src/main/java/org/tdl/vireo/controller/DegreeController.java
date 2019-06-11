@@ -8,6 +8,8 @@ import static edu.tamu.weaver.validation.model.MethodValidationType.REORDER;
 import static edu.tamu.weaver.validation.model.MethodValidationType.SORT;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,15 @@ public class DegreeController {
     public ApiResponse removeDegree(@WeaverValidatedModel Degree degree) {
         logger.info("Removing graduation month with id " + degree.getId());
         degreeRepo.remove(degree);
+        return new ApiResponse(SUCCESS);
+    }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @RequestMapping(value = "/remove-all", method = POST)
+    public ApiResponse removeAllDegrees() {
+        logger.info("Removing all degrees");
+        degreeRepo.deleteAll();
+        degreeRepo.broadcast(degreeRepo.findAll());
         return new ApiResponse(SUCCESS);
     }
 
